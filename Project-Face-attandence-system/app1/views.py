@@ -30,13 +30,15 @@ from rest_framework import status
 from .models import Student
 from .serializers import StudentSerializer
 from .serializers import SignInSerializer
+from .models import Attendance
+from .serializers import AttendanceSerializer
 
 class SignUpView(APIView):
     def post(self, request):
         serializer = StudentSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
-            return Response({"message": "Student registered successfully!"}, status=status.HTTP_201_CREATED)
+            serializer.save()  # Save the data to the database
+            return Response({"message": "Signup successful"}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class SignInView(APIView):
@@ -45,6 +47,28 @@ class SignInView(APIView):
         if serializer.is_valid():
             return Response(serializer.validated_data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class AttendanceAPIView(APIView):
+    def get(self, request):
+        records = Attendance.objects.all()
+        serialized_data = AttendanceSerializer(records, many=True).data
+
+        # Group data by course name
+        grouped_data = {}
+        for record in serialized_data:
+            course_name = record['course_name']
+            if course_name not in grouped_data:
+                grouped_data[course_name] = []
+            grouped_data[course_name].append({
+                "studentName": record['student_name'],
+                "date": record['date'],
+                "checkIn": record['check_in_time'],
+                "checkOut": record['check_out_time'],
+                "stayedTime": record['stayed_time'],
+            })
+
+        return Response(grouped_data)
 
 # Initialize MTCNN and InceptionResnetV1
 mtcnn = MTCNN(keep_all=True)
