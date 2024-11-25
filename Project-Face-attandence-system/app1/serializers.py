@@ -5,7 +5,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth.hashers import make_password
 
 
-class StudentSerializer(serializers.ModelSerializer):
+class StudentSerializer(serializers.ModelSerializer): 
     class Meta:
         model = Student
         fields = ['name', 'computer_number', 'email', 'phone_number', 'student_class', 'password', 'image', 'authorized']

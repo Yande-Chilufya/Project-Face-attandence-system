@@ -2,13 +2,14 @@ from django.urls import path
 from . import views
 from . import views
 from django.urls import path
-from .views import SignUpView
+from .views import AttendanceAPIView, SignUpView
 from .views import SignInView
 
    
 urlpatterns = [
     path('signup/', SignUpView.as_view(), name='signup'),  #if it doesn't work try adding api
     path('api/signin/', SignInView.as_view(), name='signin'),
+    path('api/attendance/', AttendanceAPIView.as_view(), name='attendance'),
     path('capture_student/', views.capture_student, name='capture_student'),
     path('', views.home, name='home'),
     path('selfie-success/', views.selfie_success, name='selfie_success'),
