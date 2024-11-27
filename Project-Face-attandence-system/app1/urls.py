@@ -7,7 +7,7 @@ from .views import SignInView
 
    
 urlpatterns = [
-    path('signup/', SignUpView.as_view(), name='signup'),  #if it doesn't work try adding api
+    path('api/signup/', SignUpView.as_view(), name='signup'),  #if it doesn't work try adding api
     path('api/signin/', SignInView.as_view(), name='signin'),
     path('api/attendance/', AttendanceAPIView.as_view(), name='attendance'),
     path('capture_student/', views.capture_student, name='capture_student'),

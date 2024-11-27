@@ -32,6 +32,7 @@ from .serializers import StudentSerializer
 from .serializers import SignInSerializer
 from .models import Attendance
 from .serializers import AttendanceSerializer
+from rest_framework.renderers import JSONRenderer
 
 class SignUpView(APIView):
     def post(self, request):
@@ -50,25 +51,35 @@ class SignInView(APIView):
 
 
 class AttendanceAPIView(APIView):
+    renderer_classes = [JSONRenderer]
+
     def get(self, request):
-        records = Attendance.objects.all()
-        serialized_data = AttendanceSerializer(records, many=True).data
+        try:
+            records = Attendance.objects.all()
+            
+            # If no records exist
+            if not records.exists():
+                return Response([], status=status.HTTP_200_OK)
+            
+            serializer = AttendanceSerializer(records, many=True)
+            
+            # Transform serialized data if needed
+            attendance_records = []
+            for record in serializer.data:
+                attendance_records.append({
+                    "studentName": record.get('student_name', 'Unknown'),
+                    "date": record.get('date'),
+                    "checkIn": record.get('check_in_time'),
+                    "checkOut": record.get('check_out_time'),
+                })
 
-        # Group data by course name
-        grouped_data = {}
-        for record in serialized_data:
-            course_name = record['course_name']
-            if course_name not in grouped_data:
-                grouped_data[course_name] = []
-            grouped_data[course_name].append({
-                "studentName": record['student_name'],
-                "date": record['date'],
-                "checkIn": record['check_in_time'],
-                "checkOut": record['check_out_time'],
-                "stayedTime": record['stayed_time'],
-            })
-
-        return Response(grouped_data)
+            return Response(attendance_records, status=status.HTTP_200_OK)
+        
+        except Exception as e:
+            return Response(
+                {"error": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
 # Initialize MTCNN and InceptionResnetV1
 mtcnn = MTCNN(keep_all=True)

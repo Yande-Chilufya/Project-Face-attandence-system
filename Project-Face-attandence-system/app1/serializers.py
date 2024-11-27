@@ -36,19 +36,18 @@ class SignInSerializer(serializers.Serializer):
     
 class AttendanceSerializer(serializers.ModelSerializer):
     student_name = serializers.CharField(source='student.name', read_only=True)
-    course_name = serializers.CharField(source='course.name', read_only=True)
+    # course_name = serializers.CharField(source='course.name', read_only=True)
     date = serializers.DateField(format="%b. %d, %Y")
-    check_in_time = serializers.TimeField(format="%I:%M:%S %p")
-    check_out_time = serializers.TimeField(format="%I:%M:%S %p")
+    check_in_time = serializers.DateTimeField(format="%I:%M:%S %p")
+    check_out_time = serializers.DateTimeField(format="%I:%M:%S %p")
 
     class Meta:
         model = Attendance
         fields = [
             'student_name',
-            'course_name',
+            # 'course_name',
             'date',
             'check_in_time',
             'check_out_time',
-            'stayed_time',
         ]
 
